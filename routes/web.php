@@ -3,10 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+
+// Route::get('/products', function () {
+//     return Inertia::render('Product');
+// })->name('product');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
@@ -15,4 +20,6 @@ Route::get('dashboard', function () {
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 
-Route::get('/categories', [CategoryController::class, 'index']);
+Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDelete']);
+Route::resource('categories', CategoryController::class);
+Route::resource('products', ProductController::class);
