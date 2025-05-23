@@ -4,14 +4,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-// Route::get('/products', function () {
-//     return Inertia::render('Product');
-// })->name('product');
+Route::get('/home', function () {
+    return Inertia::render('Product', [
+            'products' => Product::all()]);
+})->name('product');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');

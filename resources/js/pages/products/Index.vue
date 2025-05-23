@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
     Dialog,
     DialogClose,
@@ -62,6 +63,16 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
 import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Plus, ArrowUpDown, ChevronDown } from 'lucide-vue-next';
@@ -77,9 +88,18 @@ const breadcrumbItems: BreadcrumbItem[] = [
   },
 ];
 
+export interface Product {
+  id: number
+  name: string,
+  category_id: number,
+  price: number,
+  image: string,
+  description: string,
+}
+
 export interface Category {
   id: number
-  name: string
+  name: string,
 }
 
 interface Pagination<T> {
@@ -91,13 +111,14 @@ interface Pagination<T> {
 }
 
 const props = defineProps<{
-  products: Pagination<Category>
+  products: Pagination<Product>
   filters: Record<string, any>
+  categories: Array<Category>
 }>()
 
 // const data = ref<Category[]>([])
 
-const columns: ColumnDef<Category>[] = [
+const columns: ColumnDef<Product>[] = [
   {
     id: 'select',
     header: ({ table }) => h(Checkbox, {
@@ -114,6 +135,23 @@ const columns: ColumnDef<Category>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: 'image',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Image', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => {
+      const imagePath = row.original.image
+      return h('img', {
+        src: `/storage/${imagePath}`,
+        alt: 'product image',
+        class: 'w-16 h-16 object-cover rounded',
+      })
+    },
+  },
+  {
     accessorKey: 'name',
     header: ({ column }) => {
       return h(Button, {
@@ -122,6 +160,16 @@ const columns: ColumnDef<Category>[] = [
       }, () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
     cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name')),
+  },
+  {
+    accessorKey: 'price',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Price', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('price')),
   },
   {
     id: 'actions',
@@ -169,22 +217,39 @@ const table = useVueTable({
 
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).max(50),
+  price: z.number(),
+  category_id: z.number().nullable(),
+  image: z.any().optional(),
+  description: z.string().optional(),
 }))
 
 const showDialog = ref(false)
 const showDialogDelete = ref(false)
 const showDialogBulkDelete = ref(false)
 const emit = defineEmits(['close'])
-const editingCategory = ref({name: ''})
+const editingCategory = ref({name: '', image: null})
 const deletingCategory = ref(0)
 const bulkDeletingCategory = ref([])
+const selectedFile = ref<File | null>(null)
 
 const form = useForm({
   name: '',
+  price: 0,
+  category_id: null,
   image: null,
+  description: '',
 })
 
+// const componentField = {
+//   onInput: (e: any) => form.image = e.target.files[0],
+// }
+
 function handleFileChange(e: any) {
+  // const target = event.target as HTMLInputElement
+  // const file = target.files?.[0]
+  // if (file) {
+  //   selectedFile.value = file
+  // }
   form.image = e.target.files[0]
 }
 
@@ -192,18 +257,28 @@ const search = ref('')
 
 const selectedCategory = ref({
   id: null,
-  name: 'Đang cập nhật...',
+  name: '',
+  price: 0,
+  image: null,
+  description: '',
 })
 
-function fetchCategories(params = {}) {
+function fetchProducts(params = {}) {
   router.get('/products', { ...search, ...params }, { 
     preserveScroll: true,
     preserveState: true 
   })
 }
 
+function fetchCategories(params = {}) {
+  router.get('/categories', { ...search, ...params }, { 
+    preserveScroll: true,
+    preserveState: true 
+  })
+}
+
 function onSearch() {
-  fetchCategories({ search: search.value, page: 1 })
+  fetchProducts({ search: search.value, page: 1 })
 }
 
 // function sort(column) {
@@ -215,6 +290,9 @@ function create() {
   selectedCategory.value = {
     id: null,
     name: '',
+    price: 0,
+    image: null,
+    description: '',
   }
   showDialog.value = true
 }
@@ -234,7 +312,7 @@ function confirmDestroy() {
     onSuccess: () => {
       showDialogDelete.value = false
       form.reset()
-      fetchCategories()
+      fetchProducts()
     },
   })
 }
@@ -252,18 +330,32 @@ function confirmBulkDelete() {
       showDialogBulkDelete.value = false
       rowSelection.value = {}
       form.reset()
-      fetchCategories()
+      fetchProducts()
     },
   })
 }
 
 function onSubmit(values: any) {
+  // console.log(values)
+  // return false;
+  // const formData = new FormData()
+  // formData.append('name', values.name)
+  // const file = selectedFile.value
+  // if (file) {
+  //   formData.append('image', file)
+  // }
   form.name = values.name
+  form.price = values.price
+  form.category_id = values.category_id
+  form.description = values.description
+  // if (file) {
+  //   form.image = file
+  // }
   form.post('/products', {
     onSuccess: () => {
       showDialog.value = false
       form.reset()
-      fetchCategories()
+      fetchProducts()
     },
   })
 }
@@ -273,7 +365,7 @@ function goToPage(page: number) {
   //   preserveScroll: true,
   //   preserveState: true,
   // })
-  fetchCategories({ page })
+  fetchProducts({ page })
 }
 </script>
 <template>
@@ -347,11 +439,55 @@ function goToPage(page: number) {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="category_id">
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
 
+                  <Select v-bind="componentField">
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem 
+                          v-for="category in categories" 
+                          :key="category.id" 
+                          :value="category.id"
+                        >
+                          {{ category.name }}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="price">
+                <FormItem>
+                  <FormLabel>Price</FormLabel>
+                  <FormControl>
+                    <Input type="number" v-bind="componentField" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="image">
                 <FormItem>
                   <FormLabel>Picture</FormLabel>
                   <FormControl>
-                    <Input id="picture" type="file" v-bind="componentField" @change="handleFileChange"/>
+                    <Input id="picture" type="file" @change="handleFileChange" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="description">
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea v-bind="componentField" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

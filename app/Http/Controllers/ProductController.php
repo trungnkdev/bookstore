@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
@@ -26,6 +27,7 @@ class ProductController extends Controller
         return Inertia::render('products/Index', [
             'products' => $products,
             'filters' => $request->only('search', 'sort', 'direction'),
+            'categories' => Category::select('id', 'name')->get()
         ]);
     }
 

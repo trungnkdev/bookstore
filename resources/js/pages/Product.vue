@@ -3,13 +3,34 @@ import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import Heading from '@/components/Heading.vue';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
-    title: 'Categories',
-    href: '/categories',
+    title: 'Products',
+    href: '/home',
   },
 ];
+
+export interface Product {
+  id: number
+  name: string,
+  category_id: number,
+  price: number,
+  image: string,
+  description: string,
+}
+
+const props = defineProps<{
+  products: Array<Product>
+}>();
 </script>
 
 <template>
@@ -19,7 +40,20 @@ const breadcrumbItems: BreadcrumbItem[] = [
   </Head>
   <div class="px-4 py-6">
     <div class="flex justify-between mb-4">
-      <Heading title="Categories" description="Manage product categories" class="mb-0" />
+      <Heading title="Products" description="" class="mb-0" />
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Card v-for="product in props.products" :key="product.id">
+        <CardContent class="px-4">
+          <img
+            :src="`/storage/${product.image}`"
+            :alt="`Image of ${product.name}`"
+            class="w-full h-48 object-cover rounded-lg mb-3"
+          />
+          <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
+          <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>
