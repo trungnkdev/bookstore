@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use App\Models\Product;
 
 Route::get('/', function () {
@@ -25,3 +26,4 @@ require __DIR__.'/auth.php';
 Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDelete']);
 Route::resource('categories', CategoryController::class);
 Route::resource('products', ProductController::class);
+Route::resource('users', UserController::class);

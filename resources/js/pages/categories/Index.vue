@@ -405,7 +405,7 @@ function goToPage(page: number) {
                 <DialogTitle>Category</DialogTitle>
               </DialogHeader>
               
-              <form id="dialogForm" @submit="handleSubmit($event, onSubmit)">
+              <form id="dialogForm" class="space-y-6" @submit="handleSubmit($event, onSubmit)">
                 <FormField v-slot="{ componentField }" name="name">
                   <FormItem>
                     <FormLabel>Name</FormLabel>

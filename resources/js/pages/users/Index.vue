@@ -73,6 +73,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import InputError from '@/components/InputError.vue';
+
 import Heading from '@/components/Heading.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Plus, ArrowUpDown, ChevronDown } from 'lucide-vue-next';
@@ -80,30 +82,20 @@ import { cn, valueUpdater } from '@/lib/utils'
 
 import DropdownAction from '@/components/DataTableDropDown.vue'
 import AppLayout from '@/layouts/AppLayout.vue';
+import Password from '../settings/Password.vue'
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
-    title: 'Dashboard',
-    href: '/dashboard',
-  },
-  {
-    title: 'Categories',
-    href: '/categories',
+    title: 'Users',
+    href: '/users',
   },
 ];
 
-export interface Product {
+export interface User {
   id: number
   name: string,
-  category_id: number,
-  price: number,
-  image: string,
-  description: string,
-}
-
-export interface Category {
-  id: number
-  name: string,
+  email: string,
+  password: string,
 }
 
 interface Pagination<T> {
@@ -115,14 +107,11 @@ interface Pagination<T> {
 }
 
 const props = defineProps<{
-  products: Pagination<Product>
+  users: Pagination<User>
   filters: Record<string, any>
-  categories: Array<Category>
 }>()
 
-// const data = ref<Category[]>([])
-
-const columns: ColumnDef<Product>[] = [
+const columns: ColumnDef<User>[] = [
   {
     id: 'select',
     header: ({ table }) => h(Checkbox, {
@@ -139,23 +128,6 @@ const columns: ColumnDef<Product>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'image',
-    header: ({ column }) => {
-      return h(Button, {
-        variant: 'ghost',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }, () => ['Image', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
-    },
-    cell: ({ row }) => {
-      const imagePath = row.original.image
-      return h('img', {
-        src: `/storage/${imagePath}`,
-        alt: 'product image',
-        class: 'w-16 h-16 object-cover rounded',
-      })
-    },
-  },
-  {
     accessorKey: 'name',
     header: ({ column }) => {
       return h(Button, {
@@ -166,14 +138,14 @@ const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name')),
   },
   {
-    accessorKey: 'price',
+    accessorKey: 'email',
     header: ({ column }) => {
       return h(Button, {
         variant: 'ghost',
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }, () => ['Price', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+      }, () => ['Email', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
-    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('price')),
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name')),
   },
   {
     id: 'actions',
@@ -195,10 +167,10 @@ const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
-const tableData = computed(() => props.products)
+const tableData = computed(() => props.users.data)
 
 const table = useVueTable({
-  data: tableData.value.data,
+  data: tableData,
   columns,
   getCoreRowModel: getCoreRowModel(),
   // getPaginationRowModel: getPaginationRowModel(),
@@ -221,10 +193,9 @@ const table = useVueTable({
 
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).max(50),
-  price: z.number(),
-  category_id: z.number().nullable(),
-  image: z.any().optional(),
-  description: z.string().optional(),
+  email: z.string().email(),
+  password: z.string().min(6),
+  password_confirmation: z.string().min(6),
 }))
 
 const showDialog = ref(false)
@@ -238,51 +209,31 @@ const selectedFile = ref<File | null>(null)
 
 const form = useForm({
   name: '',
-  price: 0,
-  category_id: null,
-  image: null,
-  description: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
 })
-
-// const componentField = {
-//   onInput: (e: any) => form.image = e.target.files[0],
-// }
-
-function handleFileChange(e: any) {
-  // const target = event.target as HTMLInputElement
-  // const file = target.files?.[0]
-  // if (file) {
-  //   selectedFile.value = file
-  // }
-  form.image = e.target.files[0]
-}
 
 const search = ref('')
 
 const selectedCategory = ref({
   id: null,
   name: '',
-  price: 0,
-  image: null,
-  description: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
 })
 
-function fetchProducts(params = {}) {
-  router.get('/products', { ...search, ...params }, { 
+function fetchUsers(params = {}) {
+  router.get('/users', { ...search, ...params }, { 
     preserveScroll: true,
     preserveState: true 
   })
 }
 
-function fetchCategories(params = {}) {
-  router.get('/categories', { ...search, ...params }, { 
-    preserveScroll: true,
-    preserveState: true 
-  })
-}
 
 function onSearch() {
-  fetchProducts({ search: search.value, page: 1 })
+  fetchUsers({ search: search.value, page: 1 })
 }
 
 // function sort(column) {
@@ -294,9 +245,9 @@ function create() {
   selectedCategory.value = {
     id: null,
     name: '',
-    price: 0,
-    image: null,
-    description: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
   }
   showDialog.value = true
 }
@@ -312,11 +263,11 @@ function destroy(id: number) {
 }
 
 function confirmDestroy() {
-  router.delete(`/products/${deletingCategory.value}`, {
+  router.delete(`/users/${deletingCategory.value}`, {
     onSuccess: () => {
       showDialogDelete.value = false
       form.reset()
-      fetchProducts()
+      fetchUsers()
     },
   })
 }
@@ -327,39 +278,31 @@ function deleteRows() {
 
 function confirmBulkDelete() {
   const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id)
-  router.delete('/products/bulk-delete', {
+  router.delete('/users/bulk-delete', {
     data: { ids: selectedIds },
     preserveScroll: true,
     onSuccess: () => {
       showDialogBulkDelete.value = false
       rowSelection.value = {}
       form.reset()
-      fetchProducts()
+      fetchUsers()
     },
   })
 }
 
 function onSubmit(values: any) {
-  // console.log(values)
-  // return false;
-  // const formData = new FormData()
-  // formData.append('name', values.name)
-  // const file = selectedFile.value
-  // if (file) {
-  //   formData.append('image', file)
-  // }
   form.name = values.name
-  form.price = values.price
-  form.category_id = values.category_id
-  form.description = values.description
+  form.email = values.email
+  form.password = values.password
+  form.password_confirmation = values.password_confirmation
   // if (file) {
   //   form.image = file
   // }
-  form.post('/products', {
+  form.post('/users', {
     onSuccess: () => {
       showDialog.value = false
       form.reset()
-      fetchProducts()
+      fetchUsers()
     },
   })
 }
@@ -369,26 +312,15 @@ function goToPage(page: number) {
   //   preserveScroll: true,
   //   preserveState: true,
   // })
-  fetchProducts({ page })
+  fetchUsers({ page })
 }
-
-function removeImage() {
-  selectedCategory.value.image = null
-  // Optional: mark image as removed in form state
-}
-
-// Handle page change
-const handlePageChange = (page: number) => {
-  fetchProducts(page)
-}
-
 </script>
 <template>
-  <Head title="Products" />
+  <Head title="Users" />
   <AppLayout :breadcrumbs="breadcrumbItems">
     <div class="px-4 py-6">
       <div class="flex justify-between mb-4">
-        <Heading title="Products" description="Manage product products" class="mb-0" />
+        <Heading title="Users" description="Manage users" class="mb-0" />
         <Button @click="create">
           <Plus class="mr-2 h-4 w-4" />
           Create
@@ -396,14 +328,53 @@ const handlePageChange = (page: number) => {
       </div>
 
       <Card>
-        <DataTable :columns="columns" :data="tableData" @page-change="goToPage" />
+        <div class="w-full px-4">
+          <div class="flex items-center py-4">
+            <Input
+              class="max-w-sm"
+              placeholder="Filter name..."
+              :model-value="table.getColumn('name')?.getFilterValue() as string"
+              @update:model-value=" table.getColumn('name')?.setFilterValue($event)"
+            />
+            <Button
+              v-if="table.getFilteredSelectedRowModel().rows.length" 
+              @click="deleteRows"
+              class="ml-2"
+            >
+              deleteRows
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button variant="outline" class="ml-auto">
+                  Columns <ChevronDown class="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuCheckboxItem
+                  v-for="column in table.getAllColumns().filter((column) => column.getCanHide())"
+                  :key="column.id"
+                  class="capitalize"
+                  :model-value="column.getIsVisible()"
+                  @update:model-value="(value) => {
+                    column.toggleVisibility(!!value)
+                  }"
+                >
+                  {{ column.id }}
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div class="rounded-md border">
+            <DataTable :columns="columns" :data="tableData" />
+          </div>
+        </div>
       </Card>
 
       <Form v-slot="{ handleSubmit }" as="" :key="selectedCategory?.id || 'new'" :initial-values="selectedCategory" keep-values :validation-schema="formSchema">
         <Dialog v-model:open="showDialog">
           <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Category</DialogTitle>
+              <DialogTitle>User</DialogTitle>
             </DialogHeader>
             
             <form id="dialogForm" class="space-y-6" @submit="handleSubmit($event, onSubmit)">
@@ -416,78 +387,33 @@ const handlePageChange = (page: number) => {
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="category_id">
+              <FormField v-slot="{ componentField }" name="email">
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
-
-                  <Select v-bind="componentField">
-                    <FormControl class="w-full">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem 
-                          v-for="category in categories" 
-                          :key="category.id" 
-                          :value="category.id"
-                        >
-                          {{ category.name }}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField v-slot="{ componentField }" name="price">
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="number" v-bind="componentField" />
+                    <Input type="text" v-bind="componentField" />
                   </FormControl>
                   <FormMessage />
+                  <InputError :message="form.errors.email" />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField }" name="image">
+              <FormField v-slot="{ componentField }" name="password">
                 <FormItem>
-                  <FormLabel>Picture</FormLabel>
-
-                  <div v-if="selectedCategory.image" class="mb-2">
-                    <a
-                      :href="`storage/${selectedCategory.image}`"
-                      target="_blank"
-                      rel="noopener"
-                      class="text-blue-600 underline hover:text-blue-800"
-                    >
-                      View Image
-                    </a>
-                    <!-- <Button variant="link">
-                      View Image
-                    </Button> -->
-                    <button
-                      type="button"
-                      @click="removeImage"
-                      class="ml-2 text-red-600 hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  
-                  <FormControl v-else>
-                    <Input id="picture" type="file" @change="handleFileChange" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField v-slot="{ componentField }" name="description">
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Pasword</FormLabel>
                   <FormControl>
-                    <Textarea v-bind="componentField" />
+                    <Input type="password" v-bind="componentField" />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="password_confirmation">
+                <FormItem>
+                  <FormLabel>Confirm password</FormLabel>
+                  <FormControl>
+                    <Input type="password" v-bind="componentField" />
+                  </FormControl>
+                  <FormMessage />
+                  <InputError :message="form.errors.password" />
                 </FormItem>
               </FormField>
             </form>
