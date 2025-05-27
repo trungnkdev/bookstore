@@ -15,6 +15,9 @@ Route::get('/home', function () {
     return Inertia::render('Product', [
             'products' => Product::all()]);
 })->name('product');
+Route::get('/cart', function () {
+    return Inertia::render('Cart');
+})->name('cart');
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');

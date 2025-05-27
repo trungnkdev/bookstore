@@ -37,14 +37,14 @@ import {
 } from '@/components/ui/table'
 import { cn, valueUpdater } from '@/lib/utils'
 
-export interface Product {
-  id: number
-  name: string,
-  category_id: number,
-  price: number,
-  image: string,
-  description: string,
-}
+// export interface Product {
+//   id: number
+//   name: string,
+//   category_id: number,
+//   price: number,
+//   image: string,
+//   description: string,
+// }
 
 interface Pagination<T> {
   data: TData[]
@@ -56,7 +56,7 @@ interface Pagination<T> {
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[]
-  data: Pagination<Product>
+  data: TData[] | Pagination<TData>
 }>()
 
 const sorting = ref<SortingState>([])
@@ -72,8 +72,20 @@ const goToPage = (page: number) => {
   emit('page-change', page)
 }
 
+const data = computed(() => {
+  return Array.isArray(props.data) ? props.data : props.data.data
+})
+
+const current_page = computed(() => {
+  return Array.isArray(props.data) ? 1 : props.data.current_page
+})
+
+const last_page = computed(() => {
+  return Array.isArray(props.data) ? 1 : props.data.last_page
+})
+
 const table = useVueTable({
-  get data() { return props.data.data },
+  get data() { return data },
   get columns() { return props.columns },
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
@@ -184,16 +196,16 @@ defineExpose({
         <Button
           variant="outline"
           size="sm"
-          :disabled="props.data.current_page === 1"
-          @click="goToPage(props.data.current_page - 1)"
+          :disabled="current_page === 1"
+          @click="goToPage(current_page - 1)"
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          :disabled="props.data.current_page === props.data.last_page"
-          @click="goToPage(props.data.current_page + 1)"
+          :disabled="current_page === last_page"
+          @click="goToPage(current_page + 1)"
         >
           Next
         </Button>
