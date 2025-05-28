@@ -15,6 +15,8 @@ import { ShoppingCart } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart'
 
+import PublicLayout from '@/layouts/PublicLayout.vue';
+
 const breadcrumbItems: BreadcrumbItem[] = [
   {
     title: 'Products',
@@ -40,39 +42,36 @@ const cart = useCartStore()
 </script>
 
 <template>
-  <Head title="Product">
-    <link rel="preconnect" href="https://rsms.me/" />
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
-  </Head>
-  <div class="px-4 py-6">
-    <div class="flex justify-between mb-4">
-      <Heading title="Products" description="" class="mb-0" />
-      <Button variant="outline" size="icon">
-        <Link :href="route('cart')">
-          <ShoppingCart class="w-4 h-4" />
-          {{ cart.items.length }}
-        </Link>
-      </Button>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <Card v-for="product in props.products" :key="product.id">
-        <CardContent class="px-4">
-          <img
-            :src="`/storage/${product.image}`"
-            :alt="`Image of ${product.name}`"
-            class="w-full h-48 object-cover rounded-lg mb-3"
-          />
-          <div class="flex justify-between px-6 pb-6">
-            <div>
-              <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
-              <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
+  <PublicLayout :breadcrumbs="breadcrumbItems">
+    <Head title="Product">
+      <link rel="preconnect" href="https://rsms.me/" />
+      <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    </Head>
+    <div class="px-4 py-6">
+      <div class="flex justify-between mb-4">
+        <Heading title="Products" description="" class="mb-0" />
+        
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <Card v-for="product in props.products" :key="product.id">
+          <CardContent class="px-4">
+            <img
+              :src="`/storage/${product.image}`"
+              :alt="`Image of ${product.name}`"
+              class="w-full h-48 object-cover rounded-lg mb-3"
+            />
+            <div class="flex justify-between px-6 pb-6">
+              <div>
+                <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
+                <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
+              </div>
+              <Button variant="outline" size="icon" @click="cart.addToCart(product)">
+                <ShoppingCart class="w-4 h-4" />
+              </Button>
             </div>
-            <Button variant="outline" size="icon" @click="cart.addToCart(product)">
-              <ShoppingCart class="w-4 h-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  </div>
+  </PublicLayout>
 </template>

@@ -7,14 +7,14 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
 use App\Models\Product;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+// Route::get('/', function () {
+//     return Inertia::render('Welcome');
+// })->name('home');
 
-Route::get('/home', function () {
+Route::get('/', function () {
     return Inertia::render('Product', [
             'products' => Product::all()]);
-})->name('product');
+})->name('home');
 Route::get('/cart', function () {
     return Inertia::render('Cart');
 })->name('cart');
