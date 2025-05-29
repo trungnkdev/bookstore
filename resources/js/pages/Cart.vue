@@ -39,19 +39,6 @@ const breadcrumbItems: BreadcrumbItem[] = [
   },
 ];
 
-export interface Product {
-  id: number
-  name: string,
-  category_id: number,
-  price: number,
-  image: string,
-  description: string,
-}
-
-const props = defineProps<{
-  products: Array<Product>
-}>();
-
 const cart = useCartStore()
 
 </script>
@@ -77,11 +64,11 @@ const cart = useCartStore()
                 <TableHead></TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead class="text-right">
+                <TableHead>
                   Total
                 </TableHead>
-                <TableHead>
-
+                <TableHead class="text-right">
+                  #
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -95,7 +82,12 @@ const cart = useCartStore()
                   <p>{{ item.description }}</p>
                 </TableCell>
                 <TableCell>
-                  <NumberField class="w-[100px]" :default-value="1" :min="1">
+                  <NumberField 
+                    class="w-[100px]" 
+                    :default-value="item.quantity ? item.quantity : 1" 
+                    :min="1"
+                    @update:model-value="cart.updateQuantity(item.id, $event)"
+                  >
                     <NumberFieldContent>
                       <NumberFieldDecrement />
                       <NumberFieldInput />
@@ -103,19 +95,25 @@ const cart = useCartStore()
                     </NumberFieldContent>
                   </NumberField>
                 </TableCell>
-                <TableCell>{{ item.price }}</TableCell>
-                <TableCell class="text-right">
-                  {{ item.totalAmount }}
+                <TableCell>
+                  <p>{{ item.price }}</p>
+                  <p><s>{{ item.price }}</s></p>
+                </TableCell>
+                <TableCell>
+                  <p>{{ item.price * item.quantity }}</p>
+                  <p><s>{{ item.price * item.quantity }}</s></p>
                 </TableCell>
                 <TableCell class="text-right">
-                  <Trash/>
+                  <Trash class="w-4" @click="cart.removeFromCart(item.id)"/>
                 </TableCell>
                 
               </TableRow>
             </TableBody>
           </Table>
         </div>
-        <div>1</div>
+        <div>
+          
+        </div>
       </div>
     </div>
   </PublicLayout>

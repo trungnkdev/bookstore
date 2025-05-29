@@ -157,7 +157,7 @@ const rightNavItems: NavItem[] = [
                                 </Link>
                               </Button>
                               <div class="absolute -top-1 -right-1 text-sm">
-                                <Badge>{{ cart.items.length }}</Badge>
+                                <Badge>{{ cart.totalQuantity }}</Badge>
                               </div>
                             </div>
                         </div>
