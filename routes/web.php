@@ -5,6 +5,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Models\Product;
 
 // Route::get('/', function () {
@@ -30,3 +31,4 @@ Route::delete('categories/bulk-delete', [CategoryController::class, 'bulkDelete'
 Route::resource('categories', CategoryController::class);
 Route::resource('products', ProductController::class);
 Route::resource('users', UserController::class);
+Route::resource('orders', OrderController::class);
