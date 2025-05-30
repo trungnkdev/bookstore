@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -18,9 +19,10 @@ import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search, ShoppingCart, User, Home, Book } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, ShoppingCart, User, Home, Book, Tag } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useCartStore } from '@/stores/cart'
+import { Input } from '@/components/ui/input'
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -42,13 +44,33 @@ const activeItemStyles = computed(
 const mainNavItems: NavItem[] = [
     {
         title: 'Home',
-        href: '/home',
+        href: '/',
         icon: Home,
     },
     {
-        title: 'Products',
-        href: '/products',
-        icon: Book,
+        title: 'New Books',
+        href: '/categories',
+        icon: Tag,
+    },
+    {
+        title: 'Best Sellers',
+        href: '/categories',
+        icon: Tag,
+    },
+    {
+        title: 'Promotions',
+        href: '/categories',
+        icon: Tag,
+    },
+    {
+        title: 'About Us',
+        href: '/categories',
+        icon: Tag,
+    },
+    {
+        title: 'Contact',
+        href: '/categories',
+        icon: Tag,
     },
 ];
 
@@ -66,6 +88,13 @@ const rightNavItems: NavItem[] = [
         icon: BookOpen,
     },
 ];
+
+const showInput = ref(false)
+const search = ref('')
+
+function hideInput() {
+  showInput.value = false
+}
 </script>
 
 <template>
@@ -139,9 +168,38 @@ const rightNavItems: NavItem[] = [
 
                 <div class="ml-auto flex items-center space-x-2">
                     <div class="relative flex items-center space-x-1">
-                        <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
+                        <!-- <Button variant="ghost" size="icon" class="group h-9 w-9 cursor-pointer">
                             <Search class="size-5 opacity-80 group-hover:opacity-100" />
-                        </Button>
+                        </Button> -->
+                        <div class="relative">
+                            <!-- Nếu đang hiển thị input -->
+                            <!-- <Input
+                            v-if="showInput"
+                            v-model="search"
+                            placeholder="Search..."
+                            class="w-48 h-9 pr-10"
+                            @blur="hideInput"
+                            autofocus
+                            /> -->
+
+                            <div v-if="showInput" class="relative w-full max-w-sm items-center">
+                                <Input id="search" type="text" placeholder="Search..." class="pl-10" v-model="search" @blur="hideInput"/>
+                                <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+                                <Search class="size-5 text-muted-foreground" />
+                                </span>
+                            </div>
+
+                            <!-- Nếu chưa hiển thị input thì hiển thị nút search -->
+                            <Button
+                            v-else
+                            variant="ghost"
+                            size="icon"
+                            class="group h-9 w-9 cursor-pointer"
+                            @click="showInput = true"
+                            >
+                            <Search class="size-5 opacity-80 group-hover:opacity-100" />
+                            </Button>
+                        </div>
 
                         <div class="hidden space-x-1 lg:flex">
                             <!-- <Button variant="outline" size="icon">

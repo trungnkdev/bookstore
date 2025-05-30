@@ -74,7 +74,7 @@ const checkout = () => {
         <Heading title="Cart" description="" class="mb-0" />
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
-        <div class="w-full px-4 col-span-2">
+        <div class="w-full px-4 col-span-2" v-if="cart.totalQuantity > 0">
           <Table>
             <TableHeader>
               <TableRow>
@@ -145,6 +145,12 @@ const checkout = () => {
             </Button>
             <Button @click="checkout">Checkout</Button>
           </div>
+        </div>
+        <div v-else>
+          <p>Looks like you haven’t added any items to the cart yet.</p>
+          <Button class="mt-4" as="inertia-link" href="/">
+            Explore products
+          </Button>
         </div>
       </div>
     </div>

@@ -21,7 +21,9 @@ class OrderController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $orders = $query->paginate(10)->appends($request->all());
+        $orders = $query->with(['orderItems.product'])
+            ->paginate(10)
+            ->appends($request->all());
 
         return Inertia::render('orders/Index', [
             'orders' => $orders,
