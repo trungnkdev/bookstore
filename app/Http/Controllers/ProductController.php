@@ -22,7 +22,7 @@ class ProductController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $products = $query->paginate(1)->appends($request->all());
+        $products = $query->paginate(10)->appends($request->all());
 
         return Inertia::render('products/Index', [
             'products' => $products,

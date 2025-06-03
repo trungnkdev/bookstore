@@ -82,6 +82,10 @@ const submit = () => {
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Log in
                 </Button>
+
+                <Button variant="outline" class="w-full">
+                    Login with Google
+                </Button>
             </div>
 
             <div class="text-center text-sm text-muted-foreground">

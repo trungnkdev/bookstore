@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Book } from 'lucide-vue-next';
+import { Book, User, Tag, ShoppingCart } from 'lucide-vue-next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -49,6 +49,45 @@ const breadcrumbs: BreadcrumbItem[] = [
                             Total Book
                         </CardTitle>
                         <Book class="h-4 w-4"/>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-2xl font-bold">
+                            100
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card class="gap-2">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0">
+                        <CardTitle class="text-sm font-medium">
+                            Total User
+                        </CardTitle>
+                        <User class="h-4 w-4"/>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-2xl font-bold">
+                            100
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card class="gap-2">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0">
+                        <CardTitle class="text-sm font-medium">
+                            Total Category
+                        </CardTitle>
+                        <Tag class="h-4 w-4"/>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="text-2xl font-bold">
+                            100
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card class="gap-2">
+                    <CardHeader class="flex flex-row items-center justify-between space-y-0">
+                        <CardTitle class="text-sm font-medium">
+                            Total Order
+                        </CardTitle>
+                        <ShoppingCart class="h-4 w-4"/>
                     </CardHeader>
                     <CardContent>
                         <div class="text-2xl font-bold">

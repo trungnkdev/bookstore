@@ -307,6 +307,11 @@ function onSubmit(values: any) {
   })
 }
 
+const closeDialog = () => {
+  showDialog.value = false
+}
+
+
 function goToPage(page: number) {
   // router.get('/categories', { page }, {
   //   preserveScroll: true,
@@ -370,11 +375,22 @@ function goToPage(page: number) {
         </div>
       </Card>
 
-      <Form v-slot="{ handleSubmit }" as="" :key="selectedCategory?.id || 'new'" :initial-values="selectedCategory" keep-values :validation-schema="formSchema">
+      <Form 
+        v-slot="{ handleSubmit }" 
+        as="" 
+        :key="selectedCategory?.id || 'new'" 
+        :initial-values="selectedCategory" 
+        keep-values 
+        :validation-schema="formSchema"
+      >
         <Dialog v-model:open="showDialog">
           <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>User</DialogTitle>
+              <DialogClose>
+                <X />
+                <span class="sr-only">Close</span>
+              </DialogClose>
             </DialogHeader>
             
             <form id="dialogForm" class="space-y-6" @submit="handleSubmit($event, onSubmit)">

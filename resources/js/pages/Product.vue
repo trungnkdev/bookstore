@@ -65,7 +65,7 @@ const cart = useCartStore()
                 <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
                 <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
               </div>
-              <Button variant="outline" size="icon" @click="cart.addToCart(product)">
+              <Button size="icon" @click="cart.addToCart(product)">
                 <ShoppingCart class="w-4 h-4" />
               </Button>
             </div>

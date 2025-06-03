@@ -124,6 +124,15 @@ const props = defineProps<{
   filters: Record<string, any>
 }>()
 
+const dateFormatter = (rawDate) => {
+  const date = new Date(rawDate)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
 const columns: ColumnDef<Order>[] = [
   {
     id: 'select',
@@ -140,7 +149,16 @@ const columns: ColumnDef<Order>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  
+  {
+    accessorKey: 'created_at',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Created At', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, dateFormatter(row.getValue('created_at')) ),
+  },
   {
     id: 'actions',
     enableHiding: false,
@@ -186,7 +204,6 @@ const table = useVueTable({
 })
 
 const formSchema = toTypedSchema(z.object({
-  name: z.string().min(2).max(50),
   email: z.string().email(),
   password: z.string().min(6),
   password_confirmation: z.string().min(6),
@@ -196,7 +213,7 @@ const showDialog = ref(false)
 const showDialogDelete = ref(false)
 const showDialogBulkDelete = ref(false)
 const emit = defineEmits(['close'])
-const editingCategory = ref({name: '', image: null})
+const editingCategory = ref({image: null})
 const deletingCategory = ref(0)
 const bulkDeletingCategory = ref([])
 const selectedFile = ref<File | null>(null)
