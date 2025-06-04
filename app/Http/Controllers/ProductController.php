@@ -58,6 +58,16 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
+    {
+        return Inertia::render('ProductDetail', [
+            'product' => $product->load('category'),
+        ]);
+    }
+
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([

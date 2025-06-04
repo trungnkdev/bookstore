@@ -62,7 +62,9 @@ const cart = useCartStore()
             />
             <div class="flex justify-between px-6 pb-6">
               <div>
-                <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
+                <Link :href="`/products/${product.id}`">
+                  <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
+                </Link>
                 <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
               </div>
               <Button size="icon" @click="cart.addToCart(product)">

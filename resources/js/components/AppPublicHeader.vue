@@ -209,12 +209,13 @@ function hideInput() {
                               </Link>
                             </Button> -->
                             <div class="relative inline-block">
-                              <Button variant="outline" size="icon">
+                              <Button variant="ghost" size="icon">
                                 <Link :href="route('cart')">
-                                  <ShoppingCart class="w-5 h-5" />
+                                  <ShoppingCart class="size-5 opacity-80 group-hover:opacity-100" />
                                 </Link>
                               </Button>
-                              <div class="absolute -top-1 -right-1 text-sm">
+                              <div v-if="cart.totalQuantity > 0" class="absolute -top-1 -right-2 text-xs text-white bg-black rounded-full px-[7.5px] py-[2px]">
+                                <span class="sr-only">Cart Items</span>
                                 <Badge>{{ cart.totalQuantity }}</Badge>
                               </div>
                             </div>
