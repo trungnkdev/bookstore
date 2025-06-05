@@ -24,37 +24,10 @@ class ProductController extends Controller
 
         $products = $query->paginate(10)->appends($request->all());
 
-        return Inertia::render('products/Index', [
+        return Inertia::render('Product', [
             'products' => $products,
             'filters' => $request->only('search', 'sort', 'direction'),
             'categories' => Category::select('id', 'name')->get()
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-
-        Product::create($validated);
-
-        return redirect()->route('products.index');
-    }
-
-    public function edit(Product $product)
-    {
-        return Inertia::render('Products/Edit', [
-            'product' => $product->load('category'),
-            'categories' => Product::all()
         ]);
     }
 
@@ -65,32 +38,12 @@ class ProductController extends Controller
     {
         return Inertia::render('ProductDetail', [
             'product' => $product->load('category'),
+            'relatedProducts' => Product::where('category_id', $product->category_id)
+                ->where('id', '!=', $product->id)
+                ->take(4)
+                ->get()
         ]);
     }
 
-    public function update(Request $request, Product $product)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric',
-            'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-
-        $product->update($validated);
-
-        return redirect()->route('products.index');
-    }
-
-    public function destroy(Product $product)
-    {
-        $product->delete();
-
-        return redirect()->route('products.index');
-    }
+    
 }

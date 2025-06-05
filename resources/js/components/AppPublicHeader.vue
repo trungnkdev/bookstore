@@ -48,28 +48,13 @@ const mainNavItems: NavItem[] = [
         icon: Home,
     },
     {
-        title: 'New Books',
-        href: '/categories',
-        icon: Tag,
-    },
-    {
-        title: 'Best Sellers',
-        href: '/categories',
-        icon: Tag,
-    },
-    {
-        title: 'Promotions',
-        href: '/categories',
-        icon: Tag,
-    },
-    {
-        title: 'About Us',
-        href: '/categories',
+        title: 'Products',
+        href: '/products',
         icon: Tag,
     },
     {
         title: 'Contact',
-        href: '/categories',
+        href: '/contact',
         icon: Tag,
     },
 ];

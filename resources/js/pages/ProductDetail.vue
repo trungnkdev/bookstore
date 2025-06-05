@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { Head, Link, usePage, useForm, router } from '@inertiajs/vue3';
   import { type BreadcrumbItem } from '@/types';
   import Heading from '@/components/Heading.vue';
   import PublicLayout from '@/layouts/PublicLayout.vue';
   import { Button } from '@/components/ui/button';
+  import ProductRelated from '@/components/ProductRelated.vue';
+  import { useCartStore } from '@/stores/cart'
 
   const breadcrumbItems: BreadcrumbItem[] = [
     {
@@ -21,13 +24,16 @@
   }
 
   const props = defineProps<{
-    product: Product
+    product: Product,
+    relatedProducts: Array<Product>
   }>();
+
+  const cart = useCartStore()
 </script>
 
 <template>
   <PublicLayout :breadcrumbs="breadcrumbItems">
-    <Head title="Product">
+    <Head title="Product Detail">
       <link rel="preconnect" href="https://rsms.me/" />
       <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
@@ -43,7 +49,7 @@
         <div class="p-4">
           <h2 class="text-2xl">{{ product.name }}</h2>
           <p>{{ product.price }}</p>
-          <Button>Add To Cart</Button>
+          <Button @click="cart.addToCart(product)">Add To Cart</Button>
           <div class="divide-y-4"></div>
           <p>Share:</p>
           <p>Tags:</p>
@@ -57,8 +63,9 @@
           <p class="px-4 py-8">{{ product.description }}</p>
         </div>
       </div>
-      <div>
-        <div class="text-2xl">Related Products</div>
+      <div class="mt-8">
+        <Heading title="Related Products" class="mb-4" />
+        <ProductRelated :products="relatedProducts" />
       </div>
     </div>
   </PublicLayout>

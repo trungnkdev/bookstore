@@ -11,7 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ShoppingCart } from 'lucide-vue-next';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { ShoppingCart, Grid2X2, List } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart'
 
@@ -33,9 +42,24 @@ export interface Product {
   description: string,
 }
 
+export interface Category {
+  id: number
+  name: string,
+}
+
+interface Pagination<T> {
+  data: T[]
+  current_page: number
+  last_page: number
+  meta: Record<string, any>
+  links: Record<string, any>[]
+}
+
 const props = defineProps<{
-  products: Array<Product>
-}>();
+  products: Pagination<Product>
+  filters: Record<string, any>
+  categories: Array<Category>
+}>()
 
 const cart = useCartStore()
 
@@ -43,36 +67,82 @@ const cart = useCartStore()
 
 <template>
   <PublicLayout :breadcrumbs="breadcrumbItems">
-    <Head title="Product">
+    <Head title="Products">
       <link rel="preconnect" href="https://rsms.me/" />
       <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     </Head>
     <div class="px-4 py-6">
-      <div class="flex justify-between mb-4">
-        <Heading title="Products" description="" class="mb-0" />
-        
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Card v-for="product in props.products" :key="product.id">
-          <CardContent class="px-4">
-            <img
-              :src="`/storage/${product.image}`"
-              :alt="`Image of ${product.name}`"
-              class="w-full h-48 object-cover rounded-lg mb-3"
-            />
-            <div class="flex justify-between px-6 pb-6">
-              <div>
-                <Link :href="`/products/${product.id}`">
-                  <h3 class="text-lg font-semibold truncate">{{ product.name }}</h3>
-                </Link>
-                <p class="text-primary font-bold">{{product.price.toLocaleString()}}</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="col-span-1 md:col-span-1 lg:col-span-1">
+          <Heading title="Select Price Range" class="mb-4" />
+          <div>
+            <h3>Product Categories</h3>
+            <p v-for="category in props.categories" :key="category.id" class="mb-2">
+              <Link :href="`/products?category=${category.id}`" class="text-blue-500 hover:underline">
+                {{ category.name }}
+              </Link>
+            </p>
+          </div>
+        </div>
+        <div class="lg:col-span-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
+            <div class="lg:col-start-1 lg:col-span-1">
+              <div class="flex justify-start items-center">
+                <span class="mr-2">Views </span>
+                <Button variant="outline" class="mr-2" size="icon">
+                  <Grid2X2 class="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon">
+                  <List class="h-4 w-4" />
+                </Button>
               </div>
-              <Button size="icon" @click="cart.addToCart(product)">
-                <ShoppingCart class="w-4 h-4" />
-              </Button>
             </div>
-          </CardContent>
-        </Card>
+            <div class="lg:col-start-2 lg:col-span-1">
+              <div class="flex justify-end items-center">
+                <span class="mr-2">Sort By</span>
+                <Select>
+                  <SelectTrigger class="w-[180px]">
+                    <SelectValue placeholder="Select a fruit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Fruits</SelectLabel>
+                      <SelectItem value="apple">
+                        Apple
+                      </SelectItem>
+                      <SelectItem value="banana">
+                        Banana
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+            <Card v-for="product in props.products.data" :key="product.id">
+              <CardContent class="px-4">
+                <Link :href="`/products/${product.id}`">
+                  <img
+                    :src="`/storage/${product.image}`"
+                    :alt="`Image of ${product.name}`"
+                    class="w-full h-48 object-cover rounded-lg mb-3"
+                  />
+                </Link>
+                <CardHeader>
+                  <CardTitle>{{ product.name }}</CardTitle>
+                  <CardDescription>{{ product.price }}</CardDescription>
+                </CardHeader>
+              </CardContent>
+              <CardFooter>
+                <Button @click="cart.addToCart(product)">
+                  <ShoppingCart class="mr-2" />
+                  Add To Cart
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   </PublicLayout>
