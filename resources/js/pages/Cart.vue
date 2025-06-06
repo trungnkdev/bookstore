@@ -98,11 +98,11 @@ const checkout = () => {
                   <Trash class="w-4" @click="cart.removeFromCart(item.id)"/>
                 </TableCell>
                 <TableCell class="font-medium">
-                  <img :src="`/storage/${item.image}`" alt="">
+                  <img :src="`/storage/${item.image}`" alt="" class="w-[50px] h-[50px] object-cover" />
                 </TableCell>
                 <TableCell class="font-medium">
                   <p>{{ item.name }}</p>
-                  <p>{{ item.description }}</p>
+                  <!-- <p>{{ item.description }}</p> -->
                 </TableCell>
                 <TableCell>
                   <NumberField 

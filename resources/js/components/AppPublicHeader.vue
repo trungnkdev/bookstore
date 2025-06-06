@@ -199,7 +199,7 @@ function hideInput() {
                                   <ShoppingCart class="size-5 opacity-80 group-hover:opacity-100" />
                                 </Link>
                               </Button>
-                              <div v-if="cart.totalQuantity > 0" class="absolute -top-1 -right-2 text-xs text-white bg-black rounded-full px-[7.5px] py-[2px]">
+                              <div v-if="cart.totalQuantity > 0" class="absolute -top-1 -right-2 text-xs text-white bg-black rounded-full px-[7px] py-[2px]">
                                 <span class="sr-only">Cart Items</span>
                                 <Badge>{{ cart.totalQuantity }}</Badge>
                               </div>

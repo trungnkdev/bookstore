@@ -18,8 +18,12 @@ class ProductController extends Controller
         }
 
         if ($sort = $request->input('sort')) {
-            $direction = $request->input('direction', 'asc');
-            $query->orderBy($sort, $direction);
+            $direction = $request->input('sort', 'asc');
+            $query->orderBy('price', $direction);
+        }
+
+        if ($category = $request->input('category')) {
+            $query->where('category_id', $category);
         }
 
         $products = $query->paginate(10)->appends($request->all());
