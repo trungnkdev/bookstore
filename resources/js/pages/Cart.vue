@@ -47,18 +47,18 @@ const form = useForm({
 })
 
 const checkout = () => {
+  router.get(route('checkout'))
+  // form.order_items = cart.items
 
-  form.order_items = cart.items
-
-  form.post('/orders', {
-    onSuccess: () => {
-      cart.clearCart()
-      alert('Đặt hàng thành công!')
-    },
-    onError: () => {
-      alert('Có lỗi xảy ra!')
-    }
-  })
+  // form.post('/orders', {
+  //   onSuccess: () => {
+  //     cart.clearCart()
+  //     alert('Đặt hàng thành công!')
+  //   },
+  //   onError: () => {
+  //     alert('Có lỗi xảy ra!')
+  //   }
+  // })
 }
 
 </script>

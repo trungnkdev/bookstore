@@ -1,0 +1,3 @@
+<template>
+  Sucess!
+</template>

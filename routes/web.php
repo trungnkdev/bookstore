@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\CategoryController;
@@ -37,3 +38,22 @@ Route::resource('users', UserController::class);
 Route::resource('orders', OrderController::class);
 
 Route::resource('products', ProductController::class);
+
+Route::get('/checkout', function (Request $request) {
+    $stripePriceId = 'prod_SRwfKDALdRDCSZ';
+ 
+    $quantity = 1;
+ 
+    return $request->user()->checkout([$stripePriceId => $quantity], [
+        'success_url' => route('checkout-success'),
+        'cancel_url' => route('checkout-cancel'),
+    ]);
+})->name('checkout');
+ 
+Route::get('/checkout/success', function () {
+    return Inertia::render('checkout/success');
+})->name('checkout-success');
+
+Route::get('/checkout/cancel', function () {
+    return Inertia::render('checkout/cancel');
+})->name('checkout-cancel');
