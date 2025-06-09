@@ -40,15 +40,24 @@ Route::resource('orders', OrderController::class);
 Route::resource('products', ProductController::class);
 
 Route::get('/checkout', function (Request $request) {
-    $stripePriceId = 'prod_SRwfKDALdRDCSZ';
+    $stripePriceId = 'price_1RX2mME1dy0MotZhKJrrQzqb';
  
     $quantity = 1;
  
-    return $request->user()->checkout([$stripePriceId => $quantity], [
+    $checkoutSession = $request->user()->checkout([$stripePriceId => $quantity], [
         'success_url' => route('checkout-success'),
         'cancel_url' => route('checkout-cancel'),
     ]);
-})->name('checkout');
+
+    // return redirect($checkoutSession->url);
+    // return response()->view('checkout-redirect', [
+    //     'stripeUrl' => $checkoutSession->url
+    // ]);
+    return Inertia::render('CheckoutRedirect', [
+        'stripeUrl' => $checkoutSession->url,
+        'sessionId' => $checkoutSession->id,
+    ]);
+})->middleware(['auth'])->name('checkout');
  
 Route::get('/checkout/success', function () {
     return Inertia::render('checkout/success');
@@ -57,3 +66,8 @@ Route::get('/checkout/success', function () {
 Route::get('/checkout/cancel', function () {
     return Inertia::render('checkout/cancel');
 })->name('checkout-cancel');
+
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
+
