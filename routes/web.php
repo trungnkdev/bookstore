@@ -49,10 +49,6 @@ Route::get('/checkout', function (Request $request) {
         'cancel_url' => route('checkout-cancel'),
     ]);
 
-    // return redirect($checkoutSession->url);
-    // return response()->view('checkout-redirect', [
-    //     'stripeUrl' => $checkoutSession->url
-    // ]);
     return Inertia::render('CheckoutRedirect', [
         'stripeUrl' => $checkoutSession->url,
         'sessionId' => $checkoutSession->id,
@@ -70,4 +66,8 @@ Route::get('/checkout/cancel', function () {
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
+
+Route::get('/search', [ProductController::class, 'search'])
+    ->name('products.search');
+
 

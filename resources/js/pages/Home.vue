@@ -69,15 +69,15 @@ const cart = useCartStore()
                 class="inline-block rounded border border-indigo-600 bg-indigo-600 px-5 py-3 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
                 href="#"
               >
-                Get Started
+                Buy now
               </a>
 
-              <a
+              <!-- <a
                 class="inline-block rounded border border-gray-200 px-5 py-3 font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 hover:text-gray-900"
                 href="#"
               >
                 Learn More
-              </a>
+              </a> -->
             </div>
           </div>
 
@@ -117,13 +117,10 @@ const cart = useCartStore()
         <Heading title="Products" description="" class="mb-0" />
         
       </div> -->
-      https://relivator.com/
-      https://themefisher.com/demo?theme=shopplate-astro
-      https://www.builtatlightspeed.com/category/ecommerce?themes%5Bpage%5D=2
-      https://next-enterprise-commerce.vercel.app/
+      
       <header class="mb-16">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-bold text-gray-900 sm:text-3xl">Product Collection</h2>
+          <h2 class="text-xl font-bold text-gray-900 sm:text-3xl">Featured Products</h2>
           <div>Browse all products</div>
         </div>
         

@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import type { BreadcrumbItem, NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search, ShoppingCart, User, Home, Book, Tag } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useCartStore } from '@/stores/cart'
@@ -79,6 +79,21 @@ const search = ref('')
 
 function hideInput() {
   showInput.value = false
+}
+
+const searchProduct = () => {
+  if (search.value.trim() !== '') {
+    // Redirect to the search results page with the search query
+    // window.location.href = `/search?query=${encodeURIComponent(search.value.trim())}`;
+
+    router.get('/search', {
+        ...usePage().props.query,
+        keyword: encodeURIComponent(search.value.trim())
+    }, {
+        preserveState: true,
+        replace: true
+    })
+  }
 }
 </script>
 
@@ -168,7 +183,7 @@ function hideInput() {
                             /> -->
 
                             <div v-if="showInput" class="relative w-full max-w-sm items-center">
-                                <Input id="search" type="text" placeholder="Search..." class="pl-10" v-model="search" @blur="hideInput"/>
+                                <Input id="search" type="text" placeholder="Search..." class="pl-10" v-model="search" @blur="hideInput" @keyup.enter="searchProduct"/>
                                 <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
                                 <Search class="size-5 text-muted-foreground" />
                                 </span>

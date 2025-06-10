@@ -49,5 +49,20 @@ class ProductController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $query = Product::query();
+
+        if ($search = $request->input('keyword')) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $products = $query->paginate(12)->appends($request->all());
+
+        return Inertia::render('ProductSearch', [
+            'keyword' => $search,
+            'products' => $products,
+        ]);
+    }
     
 }
