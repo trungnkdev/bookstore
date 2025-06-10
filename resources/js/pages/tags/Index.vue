@@ -80,12 +80,12 @@ import AppLayout from '@/layouts/AppLayout.vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
   {
-    title: 'Categories',
-    href: '/categories',
+    title: 'Tags',
+    href: '/tags',
   },
 ];
 
-export interface Category {
+export interface Tag {
   id: number
   name: string
 }
@@ -99,13 +99,13 @@ interface Pagination<T> {
 }
 
 const props = defineProps<{
-  categories: Pagination<Category>
+  categories: Pagination<Tag>
   filters: Record<string, any>
 }>()
 
 // const data = ref<Category[]>([])
 
-const columns: ColumnDef<Category>[] = [
+const columns: ColumnDef<Tag>[] = [
   {
     id: 'select',
     header: ({ table }) => h(Checkbox, {
@@ -145,13 +145,13 @@ const columns: ColumnDef<Category>[] = [
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const category = row.original
+      const tag = row.original
 
       return h(DropdownAction, {
-        category,
+        tag,
         onExpand: row.toggleExpanded,
-        onEdit: () => edit(category),
-        onDelete: () => destroy(category.id),
+        onEdit: () => edit(tag),
+        onDelete: () => destroy(tag.id),
       })
     },
   },

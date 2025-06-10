@@ -5,17 +5,19 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Tag, LibraryBig, User, ShoppingBasket, Store, BookCopy } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Tag, LibraryBig, User, ShoppingBasket, Store, BookCopy, Gift, Warehouse, FileChartColumn } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const overviewNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
     },
+]
+const productNavItems: NavItem[] = [
     {
-        title: 'Products',
+        title: 'All Products',
         href: '/admin/products',
         icon: LibraryBig,
     },
@@ -35,16 +37,53 @@ const mainNavItems: NavItem[] = [
         icon: BookCopy,
     },
     {
+        title: 'Promotions',
+        href: '/promotions',
+        icon: Gift,
+    },
+    {
         title: 'Orders',
         href: '/orders',
         icon: ShoppingBasket,
     },
     {
+        title: 'Inventory',
+        href: '/inventory',
+        icon: Warehouse,
+    },
+    
+];
+
+const userNavItems: NavItem[] = [
+    {
         title: 'Users',
         href: '/users',
         icon: User,
     },
-];
+    {
+        title: 'Roles',
+        href: '/roles',
+        icon: User,
+    },
+    {
+        title: 'Permissions',
+        href: '/permissions',
+        icon: User,
+    },
+]
+
+const reportNavItems: NavItem[] = [
+    {
+        title: 'Revenue',
+        href: '/users',
+        icon: FileChartColumn,
+    },
+    {
+        title: 'Inventory',
+        href: '/roles',
+        icon: FileChartColumn,
+    },
+]
 
 const footerNavItems: NavItem[] = [
     // {
@@ -80,7 +119,10 @@ const footerNavItems: NavItem[] = [
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="overviewNavItems" groupName="Overview" />
+            <NavMain :items="productNavItems" groupName="Product Management" />
+            <NavMain :items="userNavItems" groupName="Access Management" />
+            <NavMain :items="reportNavItems" groupName="Report" />
         </SidebarContent>
 
         <SidebarFooter>

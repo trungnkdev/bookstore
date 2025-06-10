@@ -143,11 +143,11 @@ const checkout = () => {
             <Button variant="outline">
               Continue shoping
             </Button>
-            <!-- <Button @click="checkout">Checkout</Button> -->
+            <Button @click="checkout">Checkout</Button>
             <!-- <Link href="/checkout">Checkout</Link> -->
-            <form :action="route('checkout')" method="GET">
+            <!-- <form :action="route('checkout')" method="GET">
               <button type="submit" class="btn btn-primary">Checkout</button>
-            </form>
+            </form> -->
           </div>
         </div>
         <div v-else>
