@@ -18,7 +18,7 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/ui/number-field'
-import { ShoppingCart } from 'lucide-vue-next';
+import { ShoppingCart, MoveLeft } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/stores/cart'
 import {
@@ -78,9 +78,6 @@ const checkout = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  #
-                </TableHead>
                 <TableHead class="w-[100px]">
                   Item
                 </TableHead>
@@ -90,13 +87,14 @@ const checkout = () => {
                 <TableHead>
                   Total
                 </TableHead>
+                <TableHead>
+                  
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow v-for="item in cart.items" :key="item.id">
-                <TableCell class="text-right">
-                  <Trash class="w-4" @click="cart.removeFromCart(item.id)"/>
-                </TableCell>
+                
                 <TableCell class="font-medium">
                   <img :src="`/storage/${item.image}`" alt="" class="w-[50px] h-[50px] object-cover" />
                 </TableCell>
@@ -126,21 +124,28 @@ const checkout = () => {
                   <p>{{ item.price * item.quantity }}</p>
                   <p><s>{{ item.price * item.quantity }}</s></p>
                 </TableCell>
+                <TableCell class="text-right">
+                  <Trash class="w-4" @click="cart.removeFromCart(item.id)"/>
+                </TableCell>
               </TableRow>
             </TableBody>
             <TableFooter>
-              <TableRow>
-                <TableHead colSpan="5" class="text-right">
-                  TOTAL
+              <TableRow class="bg-gray-100">
+                <TableHead colSpan="4" class="text-right">
+                  TOTAL: {{ cart.totalPrice }}
                 </TableHead>
-                <TableHead>
-                  {{ cart.totalPrice }}
+                <TableHead class="text-right py-2">
+                  <Button variant="outline" @click="cart.clearCart">
+                    <Trash class="w-4 mr-2" />
+                    Clear cart
+                  </Button>
                 </TableHead>
               </TableRow>
             </TableFooter>
           </Table>
           <div class="flex justify-between pt-6 pb-6">
             <Button variant="outline">
+              <MoveLeft class="w-4 mr-2" />
               Continue shoping
             </Button>
             <Button @click="checkout">Checkout</Button>

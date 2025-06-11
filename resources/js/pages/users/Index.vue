@@ -324,7 +324,7 @@ function goToPage(page: number) {
   <Head title="Users" />
   <AppLayout :breadcrumbs="breadcrumbItems">
     <div class="px-4 py-6">
-      <div class="flex justify-between mb-4">
+      <div class="flex justify-between">
         <Heading title="Users" description="Manage users" class="mb-0" />
         <Button @click="create">
           <Plus class="mr-2 h-4 w-4" />
@@ -332,9 +332,9 @@ function goToPage(page: number) {
         </Button>
       </div>
 
-      <Card>
-        <div class="w-full px-4">
-          <div class="flex items-center py-4">
+      <Card class="py-0">
+        <!-- <div class="w-full px-4"> -->
+          <!-- <div class="flex items-center py-4">
             <Input
               class="max-w-sm"
               placeholder="Filter name..."
@@ -368,11 +368,9 @@ function goToPage(page: number) {
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
-          <div class="rounded-md border">
-            <DataTable :columns="columns" :data="tableData" />
-          </div>
-        </div>
+          </div> -->
+          <DataTable :columns="columns" :data="tableData" />
+        <!-- </div> -->
       </Card>
 
       <Form 

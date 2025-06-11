@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Tag;
 
 class ProductController extends Controller
 {
@@ -23,12 +24,15 @@ class ProductController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $products = $query->paginate(10)->appends($request->all());
+        $products = $query->with(['category', 'tags'])
+            ->paginate(10)
+            ->appends($request->all());
 
         return Inertia::render('products/Index', [
             'products' => $products,
             'filters' => $request->only('search', 'sort', 'direction'),
-            'categories' => Category::select('id', 'name')->get()
+            'categories' => Category::select('id', 'name')->get(),
+            'tags' => Tag::select('id', 'name')->get(),
         ]);
     }
 
@@ -46,7 +50,11 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if ($tags = $request->input('tags')) {
+            $product->tags()->sync($tags);
+        }
 
         return redirect()->route('products.index');
     }
@@ -88,6 +96,12 @@ class ProductController extends Controller
         }
 
         $product->update($validated);
+
+        if ($tags = $request->input('tags')) {
+            $product->tags()->sync($tags);
+        } else {
+            $product->tags()->detach();
+        }
 
         return redirect()->route('products.index');
     }

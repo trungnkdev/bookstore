@@ -92,6 +92,16 @@ const breadcrumbItems: BreadcrumbItem[] = [
   },
 ];
 
+export interface Category {
+  id: number
+  name: string,
+}
+
+export interface Tag {
+  id: number
+  name: string,
+}
+
 export interface Product {
   id: number
   name: string,
@@ -99,11 +109,7 @@ export interface Product {
   price: number,
   image: string,
   description: string,
-}
-
-export interface Category {
-  id: number
-  name: string,
+  tags: Tag[],
 }
 
 interface Pagination<T> {
@@ -118,6 +124,7 @@ const props = defineProps<{
   products: Pagination<Product>
   filters: Record<string, any>
   categories: Array<Category>
+  tags: Array<Tag>
 }>()
 
 // const data = ref<Category[]>([])
@@ -164,6 +171,26 @@ const columns: ColumnDef<Product>[] = [
       }, () => ['Name', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
     },
     cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('name')),
+  },
+  {
+    accessorKey: 'category',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Category', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('category')?.name || 'N/A'),
+  },
+  {
+    accessorKey: 'tags',
+    header: ({ column }) => {
+      return h(Button, {
+        variant: 'ghost',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }, () => ['Tags', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })])
+    },
+    cell: ({ row }) => h('div', { class: 'lowercase' }, ((row.getValue('tags') as Tag[]) || []).map((tag: Tag) => tag.name).join(', ')),
   },
   {
     accessorKey: 'price',
@@ -225,6 +252,7 @@ const formSchema = toTypedSchema(z.object({
   category_id: z.number().nullable(),
   image: z.any().optional(),
   description: z.string().optional(),
+  tags: z.array(z.number()).optional(),
 }))
 
 const showDialog = ref(false)
@@ -242,6 +270,7 @@ const form = useForm({
   category_id: null,
   image: null,
   description: '',
+  tags: [],
 })
 
 // const componentField = {
@@ -265,10 +294,11 @@ const selectedCategory = ref({
   price: 0,
   image: null,
   description: '',
+  tags: [],
 })
 
 function fetchProducts(params = {}) {
-  router.get('/products', { ...search, ...params }, { 
+  router.get('/admin/products', { ...search, ...params }, { 
     preserveScroll: true,
     preserveState: true 
   })
@@ -297,6 +327,7 @@ function create() {
     price: 0,
     image: null,
     description: '',
+    tags: [],
   }
   showDialog.value = true
 }
@@ -312,7 +343,7 @@ function destroy(id: number) {
 }
 
 function confirmDestroy() {
-  router.delete(`/products/${deletingCategory.value}`, {
+  router.delete(`/admin/products/${deletingCategory.value}`, {
     onSuccess: () => {
       showDialogDelete.value = false
       form.reset()
@@ -327,7 +358,7 @@ function deleteRows() {
 
 function confirmBulkDelete() {
   const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id)
-  router.delete('/products/bulk-delete', {
+  router.delete('/admin/products/bulk-delete', {
     data: { ids: selectedIds },
     preserveScroll: true,
     onSuccess: () => {
@@ -352,10 +383,13 @@ function onSubmit(values: any) {
   form.price = values.price
   form.category_id = values.category_id
   form.description = values.description
+  form.tags = values.tags || []
+
+  // console.log('Form data:', form)
   // if (file) {
   //   form.image = file
   // }
-  form.post('/products', {
+  form.post('/admin/products', {
     onSuccess: () => {
       showDialog.value = false
       form.reset()
@@ -387,7 +421,7 @@ const handlePageChange = (page: number) => {
   <Head title="Products" />
   <AppLayout :breadcrumbs="breadcrumbItems">
     <div class="px-4 py-6">
-      <div class="flex justify-between mb-4">
+      <div class="flex justify-between">
         <Heading title="Products" description="Manage product products" class="mb-0" />
         <Button @click="create">
           <Plus class="mr-2 h-4 w-4" />
@@ -395,7 +429,7 @@ const handlePageChange = (page: number) => {
         </Button>
       </div>
 
-      <Card>
+      <Card class="py-0">
         <DataTable :columns="columns" :data="tableData" @page-change="goToPage" />
       </Card>
 
@@ -439,6 +473,29 @@ const handlePageChange = (page: number) => {
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ componentField }" name="tags">
+                <FormItem>
+                  <FormLabel>Tags</FormLabel>
+                  <Select multiple v-bind="componentField">
+                    <FormControl class="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a tags" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem 
+                          v-for="tag in tags" 
+                          :key="tag.id" 
+                          :value="tag.id"
+                        >
+                          {{ tag.name }}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               </FormField>
               <FormField v-slot="{ componentField }" name="price">

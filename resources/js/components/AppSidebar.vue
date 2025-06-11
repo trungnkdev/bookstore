@@ -121,8 +121,8 @@ const footerNavItems: NavItem[] = [
         <SidebarContent>
             <NavMain :items="overviewNavItems" groupName="Overview" />
             <NavMain :items="productNavItems" groupName="Product Management" />
-            <NavMain :items="userNavItems" groupName="Access Management" />
             <NavMain :items="reportNavItems" groupName="Report" />
+            <NavMain :items="userNavItems" groupName="Access Management" />
         </SidebarContent>
 
         <SidebarFooter>

@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
 use App\Models\Product;
+use App\Models\Order;
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome');
@@ -42,13 +43,48 @@ Route::resource('orders', OrderController::class);
 Route::resource('products', ProductController::class);
 
 Route::get('/checkout', function (Request $request) {
-    $stripePriceId = 'price_1RX2mME1dy0MotZhKJrrQzqb';
+    // $stripePriceId = 'price_1RX2mME1dy0MotZhKJrrQzqb';
  
-    $quantity = 1;
+    // $quantity = 1;
  
-    $checkoutSession = $request->user()->checkout([$stripePriceId => $quantity], [
+    // $checkoutSession = $request->user()->checkout([$stripePriceId => $quantity], [
+    //     'success_url' => route('checkout-success'),
+    //     'cancel_url' => route('checkout-cancel'),
+    // ]);
+
+    // return Inertia::render('CheckoutRedirect', [
+    //     'stripeUrl' => $checkoutSession->url,
+    //     'sessionId' => $checkoutSession->id,
+    // ]);
+
+    $order = Order::create([
+        'user_id' => auth()->id(),
+        'status' => 'pending',
+        'notes' => 'This is a test order',
+        'payment_method' => 'stripe',
+        'payment_status' => 'unpaid',
+        'total_amount' => 5,
+        'shipping_address' => 'vietnam',
+        'discount_amount' => 0,
+    ]);
+
+    $checkoutSession = $request->user()->checkout([
+        [
+            'price_data' => [
+                'currency' => 'usd',
+                'unit_amount' => $order->total_amount * 100,
+                'product_data' => [
+                    'name' => 'Order #' . $order->id,
+                ],
+            ],
+            'quantity' => 1,
+        ]
+    ], [
         'success_url' => route('checkout-success'),
         'cancel_url' => route('checkout-cancel'),
+        'metadata' => [
+            'order_id' => $order->id,
+        ],
     ]);
 
     return Inertia::render('CheckoutRedirect', [

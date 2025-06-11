@@ -220,7 +220,7 @@ const selectedCategory = ref({
 })
 
 function fetchCategories(params = {}) {
-  router.get('/categories', { ...search, ...params }, { 
+  router.get('/tags', { ...search, ...params }, { 
     preserveScroll: true,
     preserveState: true 
   })
@@ -254,7 +254,7 @@ function destroy(id: number) {
 }
 
 function confirmDestroy() {
-  router.delete(`/categories/${deletingCategory.value}`, {
+  router.delete(`/tags/${deletingCategory.value}`, {
     onSuccess: () => {
       showDialogDelete.value = false
       form.reset()
@@ -269,7 +269,7 @@ function deleteRows() {
 
 function confirmBulkDelete() {
   const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id)
-  router.delete('/categories/bulk-delete', {
+  router.delete('/tags/bulk-delete', {
     data: { ids: selectedIds },
     preserveScroll: true,
     onSuccess: () => {
@@ -283,7 +283,7 @@ function confirmBulkDelete() {
 
 function onSubmit(values: any) {
   form.name = values.name
-  form.post('/categories', {
+  form.post('/tags', {
     onSuccess: () => {
       showDialog.value = false
       form.reset()
@@ -302,11 +302,11 @@ function goToPage(page: number) {
 </script>
 
 <template>
-    <Head title="Categories" />
+    <Head title="Tags" />
     <AppLayout :breadcrumbs="breadcrumbItems">
       <div class="px-4 py-6">
         <div class="flex justify-between mb-4">
-          <Heading title="Categories" description="Manage product categories" class="mb-0" />
+          <Heading title="Tags" description="Manage product tags" class="mb-0" />
           <!-- <Link href="/posts/create" class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500">
             
             Create

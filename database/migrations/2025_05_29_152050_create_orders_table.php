@@ -13,6 +13,16 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+
+            $table->string('payment_method')->default('cod'); // cod, card, paypal, bank_transfer
+            $table->string('payment_status')->default('unpaid'); // unpaid, paid, failed, refunded
+            $table->string('shipping_method')->default('standard'); // standard, express, pickup
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('status')->default('pending');  // pending, processing, completed, cancelled
+            $table->decimal('total_amount', 10, 2);
+            $table->decimal('discount_amount', 10, 2);
+            $table->text('shipping_address')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

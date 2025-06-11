@@ -10,7 +10,29 @@ class Order extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $appends = ['total'];
+    // protected $appends = [
+    //     'payment_method',
+    //     'payment_status',
+    //     'shipping_method',
+    //     'user_id',
+    //     'status',
+    //     'total_amount',
+    //     'discount_amount',
+    //     'shipping_address',
+    //     'notes',
+    // ];
+
+    protected $fillable = [
+        'payment_method',
+        'payment_status',
+        'shipping_method',
+        'user_id',
+        'status',
+        'total_amount',
+        'discount_amount',
+        'shipping_address',
+        'notes',
+    ];
 
     public function getTotalAttribute()
     {
