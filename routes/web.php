@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CheckoutController;
 use App\Models\Product;
 use App\Models\Order;
 
@@ -42,7 +43,10 @@ Route::resource('orders', OrderController::class);
 
 Route::resource('products', ProductController::class);
 
-Route::get('/checkout', function (Request $request) {
+// Route::resource('checkout', CheckoutController::class);
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+
+Route::get('/checkout1', function (Request $request) {
     // $stripePriceId = 'price_1RX2mME1dy0MotZhKJrrQzqb';
  
     // $quantity = 1;
@@ -91,7 +95,7 @@ Route::get('/checkout', function (Request $request) {
         'stripeUrl' => $checkoutSession->url,
         'sessionId' => $checkoutSession->id,
     ]);
-})->middleware(['auth'])->name('checkout');
+})->middleware(['auth'])->name('checkout1');
  
 Route::get('/checkout/success', function () {
     return Inertia::render('checkout/success');

@@ -22,6 +22,8 @@ class ProductController extends Controller
         if ($sort = $request->input('sort')) {
             $direction = $request->input('direction', 'asc');
             $query->orderBy($sort, $direction);
+        } else {
+            $query->orderBy('created_at', 'desc');
         }
 
         $products = $query->with(['category', 'tags'])

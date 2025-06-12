@@ -334,6 +334,7 @@ function create() {
 
 function edit(category: any) {
   selectedCategory.value = { ...category }
+  selectedCategory.value.tags = category.tags.map((tag: Tag) => tag.id)
   showDialog.value = true
 }
 
