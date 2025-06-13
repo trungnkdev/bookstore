@@ -51,6 +51,11 @@ export interface Category {
   name: string,
 }
 
+export interface Tag {
+  id: number
+  name: string,
+}
+
 interface Pagination<T> {
   data: T[]
   current_page: number
@@ -63,11 +68,44 @@ const props = defineProps<{
   products: Pagination<Product>
   filters: Record<string, any>
   categories: Array<Category>
+  tags: Array<Tag>
 }>()
 
 const cart = useCartStore()
 
-watch(selectedSort, (newValue) => {
+const page = usePage();
+
+const _filters = ref({
+  category_id: props.filters.category_id || '',
+  tag_ids: props.filters.tag_ids || [],
+});
+
+// Handle category click
+const setCategory = (id: any) => {
+  _filters.value.category_id = _filters.value.category_id === id ? '' : id;
+  applyFilters();
+};
+
+// Handle tag click (toggle)
+const toggleTag = (id: any) => {
+  const index = _filters.value.tag_ids.indexOf(id);
+  if (index >= 0) {
+    _filters.value.tag_ids.splice(index, 1);
+  } else {
+    _filters.value.tag_ids.push(id);
+  }
+  applyFilters();
+};
+
+// Submit filter to server
+const applyFilters = () => {
+  router.get(route('products.index'), _filters.value, {
+    preserveState: true,
+    preserveScroll: true,
+  });
+};
+
+watch(selectedSort, (newValue: any) => {
   router.get('/products', {
     ...usePage().props.query,
     sort: newValue
@@ -90,11 +128,49 @@ watch(selectedSort, (newValue) => {
         <div class="col-span-1 md:col-span-1 lg:col-span-1">
           <Heading title="Select Price Range" class="mb-4" />
           <div>
-            <h3>Product Categories</h3>
+            <!-- <h3 class="border-b py-2 mb-4">Product Categories</h3>
             <ul v-for="category in props.categories" :key="category.id" class="list-disc mb-2 pl-4">
               <li><Link :href="`/products?category=${category.id}`" class="text-black">
                 {{ category.name }}
               </Link></li>
+            </ul> -->
+
+            <!-- Categories List -->
+            <h2 class="text-lg font-semibold">Categories</h2>
+            <ul class="flex gap-3 mb-4">
+              <li
+                v-for="cat in props.categories"
+                :key="cat.id"
+                @click="setCategory(cat.id)"
+                :class="[
+                  'cursor-pointer px-3 py-1 rounded border',
+                  _filters.category_id == cat.id ? 'bg-blue-500 text-white' : 'bg-gray-100'
+                ]"
+              >
+                {{ cat.name }}
+              </li>
+            </ul>
+
+            <!-- <h3 class="border-b py-2 mb-4">Tags</h3>
+            <ul v-for="tag in props.tags" :key="tag.id" class="list-disc mb-2 pl-4">
+              <li><Link :href="`/products?tag=${tag.id}`" class="text-black">
+                {{ tag.name }}
+              </Link></li>
+            </ul> -->
+            <!-- Tags List -->
+            <h2 class="text-lg font-semibold">Tags</h2>
+            <ul class="flex flex-wrap gap-2 mb-4">
+              <li
+                v-for="tag in props.tags"
+                :key="tag.id"
+                @click="toggleTag(tag.id)"
+                :class="[
+                  'cursor-pointer px-3 py-1 rounded border text-sm',
+                  _filters.tag_ids.includes(tag.id.toString()) ? 'bg-green-500 text-white' : 'bg-gray-100'
+                ]"
+              >
+                {{ tag.name }}
+              </li>
             </ul>
           </div>
         </div>

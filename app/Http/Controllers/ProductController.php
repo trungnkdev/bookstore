@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Tag;
 
 class ProductController extends Controller
 {
@@ -26,12 +27,19 @@ class ProductController extends Controller
             $query->where('category_id', $category);
         }
 
+        if ($tag_ids = $request->input('tag_ids')) {
+            $query->whereHas('tags', function ($query) use ($tag_ids) {
+                $query->whereIn('tags.id', $tag_ids);
+            })->get();
+        }
+
         $products = $query->paginate(10)->appends($request->all());
 
         return Inertia::render('Product', [
             'products' => $products,
-            'filters' => $request->only('search', 'sort', 'direction'),
-            'categories' => Category::select('id', 'name')->get()
+            'filters' => $request->only('search', 'sort', 'direction', 'category_id', 'tag_ids'),
+            'categories' => Category::select('id', 'name')->get(),
+            'tags' => Tag::select('id', 'name')->get(),
         ]);
     }
 
